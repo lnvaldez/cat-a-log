@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Link</title>
+    <style>
+      form {
+        max-width: 500px;
+        margin: 20px auto;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Edit Link</h1>
+    <form id="editLinkForm">
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" required />
+      </div>
+      <div class="form-group">
+        <label for="url">URL:</label>
+        <input type="url" id="url" required />
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea id="description" rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="tags">Tags (comma-separated):</label>
+        <input type="text" id="tags" />
+      </div>
+      <button type="submit">Update Link</button>
+      <a href="index.html"><button type="button">Cancel</button></a>
+    </form>
+
+    <script>
+      const API_URL = "http://localhost:5000/api/links";
+      const linkId = new URLSearchParams(window.location.search).get("id");
+
+      // Load existing link data
+      async function loadLink() {
+        try {
+          const response = await fetch(`${API_URL}/${linkId}`);
+          const link = await response.json();
+
+          document.getElementById("title").value = link.title;
+          document.getElementById("url").value = link.url;
+          document.getElementById("description").value = link.description || "";
+          document.getElementById("tags").value = link.tags
+            ? link.tags.join(", ")
+            : "";
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Error loading link");
+        }
+      }
+
+      // Handle form submission
+      document
+        .getElementById("editLinkForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = {
+            title: document.getElementById("title").value,
+            url: document.getElementById("url").value,
+            description: document.getElementById("description").value,
+            tags: document
+              .getElementById("tags")
+              .value.split(",")
+              .map((tag) => tag.trim())
+              .filter((tag) => tag),
+          };
+
+          try {
+            const response = await fetch(`${API_URL}/${linkId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+              window.location.href = "index.html";
+            } else {
+              const error = await response.json();
+              alert(error.message || "Error updating link");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Error updating link");
+          }
+        });
+
+      // Load the link data when the page loads
+      loadLink();
+    </script>
+  </body>
+</html>

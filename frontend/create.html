@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create New Link</title>
+    <style>
+      form {
+        max-width: 500px;
+        margin: 20px auto;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Create New Link</h1>
+    <form id="createLinkForm">
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" required />
+      </div>
+      <div class="form-group">
+        <label for="url">URL:</label>
+        <input type="url" id="url" required />
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea id="description" rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="tags">Tags (comma-separated):</label>
+        <input type="text" id="tags" />
+      </div>
+      <button type="submit">Create Link</button>
+      <a href="index.html"><button type="button">Cancel</button></a>
+    </form>
+
+    <script>
+      const API_URL = "http://localhost:5000/api/links";
+
+      document
+        .getElementById("createLinkForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = {
+            title: document.getElementById("title").value,
+            url: document.getElementById("url").value,
+            description: document.getElementById("description").value,
+            tags: document
+              .getElementById("tags")
+              .value.split(",")
+              .map((tag) => tag.trim())
+              .filter((tag) => tag),
+          };
+
+          try {
+            const response = await fetch(API_URL, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+              window.location.href = "index.html";
+            } else {
+              const error = await response.json();
+              alert(error.message || "Error creating link");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Error creating link");
+          }
+        });
+    </script>
+  </body>
+</html>
