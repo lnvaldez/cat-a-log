@@ -4,66 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View Link</title>
-    <style>
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      .link-details {
-        border: 1px solid #ddd;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-      }
-      .votes {
-        margin: 20px 0;
-      }
-      .vote-buttons button {
-        margin-right: 10px;
-      }
-      .comments {
-        margin-top: 30px;
-      }
-      .comment {
-        border-left: 3px solid #ddd;
-        margin: 10px 0;
-        padding: 10px;
-      }
-      .comment-form {
-        margin-top: 20px;
-      }
-      textarea {
-        width: 100%;
-        margin-bottom: 10px;
-      }
-    </style>
+    <link rel="stylesheet" href="styles/main.css" />
   </head>
   <body>
     <div class="container">
-      <a href="index.html"><button>Back to List</button></a>
-      <div id="linkDetails" class="link-details"></div>
+      <div class="text-center mb-20">
+        <a href="index.html"><button>Back to List</button></a>
+      </div>
+
+      <div id="linkDetails" class="link-card"></div>
 
       <div class="votes">
         <h3>Votes: <span id="voteCount">0</span></h3>
         <div class="vote-buttons">
           <button onclick="vote(1)">👍 Upvote</button>
-          <button onclick="vote(-1)">👎 Downvote</button>
+          <button onclick="vote(-1)" class="delete">👎 Downvote</button>
         </div>
       </div>
 
       <div class="comments">
         <h3>Comments</h3>
         <form id="commentForm" class="comment-form">
-          <textarea
-            id="commentText"
-            rows="4"
-            placeholder="Write your comment here..."
-            required
-          ></textarea>
-          <button type="submit">Add Comment</button>
+          <div class="form-group">
+            <textarea
+              id="commentText"
+              rows="4"
+              placeholder="Write your comment here..."
+              required
+            ></textarea>
+          </div>
+          <div class="text-center">
+            <button type="submit">Add Comment</button>
+          </div>
         </form>
-        <div id="commentsList"></div>
+        <div id="commentsList" class="mt-20"></div>
       </div>
     </div>
 
@@ -81,9 +55,19 @@
 
           document.getElementById("linkDetails").innerHTML = `
             <h2>${link.title}</h2>
-            <p><a href="${link.url}" target="_blank">${link.url}</a></p>
-            <p>${link.description || ""}</p>
-            <p>Tags: ${link.tags ? link.tags.join(", ") : ""}</p>
+            <p><a href="${link.url}" target="_blank" class="mb-20">${
+            link.url
+          }</a></p>
+            <p class="description">${link.description || ""}</p>
+            <div class="tags">
+              ${
+                link.tags
+                  ? link.tags
+                      .map((tag) => `<span class="tag-filter">${tag}</span>`)
+                      .join("")
+                  : ""
+              }
+            </div>
           `;
 
           document.getElementById("voteCount").textContent = link.votes;
@@ -92,6 +76,29 @@
           document.getElementById(
             "linkDetails"
           ).innerHTML = `<p class="error">Error loading link details: ${error.message}</p>`;
+        }
+      }
+
+      async function loadComments() {
+        try {
+          const response = await fetch(`${API_URL}/comments/${linkId}`);
+          const comments = await response.json();
+
+          const commentsList = document.getElementById("commentsList");
+          commentsList.innerHTML = comments
+            .map(
+              (comment) => `
+            <div class="comment">
+              <p>${comment.content}</p>
+              <small class="text-muted">${new Date(
+                comment.createdAt
+              ).toLocaleString()}</small>
+            </div>
+          `
+            )
+            .join("");
+        } catch (error) {
+          console.error("Error:", error);
         }
       }
 
@@ -112,29 +119,6 @@
         } catch (error) {
           console.error("Error:", error);
           alert("Error voting");
-        }
-      }
-
-      async function loadComments() {
-        try {
-          const response = await fetch(`${API_URL}/comments/${linkId}`);
-          const comments = await response.json();
-
-          const commentsList = document.getElementById("commentsList");
-          commentsList.innerHTML = comments
-            .map(
-              (comment) => `
-                    <div class="comment">
-                        <p>${comment.content}</p>
-                        <small>${new Date(
-                          comment.createdAt
-                        ).toLocaleString()}</small>
-                    </div>
-                `
-            )
-            .join("");
-        } catch (error) {
-          console.error("Error:", error);
         }
       }
 

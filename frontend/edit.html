@@ -4,47 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Link</title>
-    <style>
-      form {
-        max-width: 500px;
-        margin: 20px auto;
-      }
-      .form-group {
-        margin-bottom: 15px;
-      }
-      label {
-        display: block;
-        margin-bottom: 5px;
-      }
-      input,
-      textarea {
-        width: 100%;
-        padding: 8px;
-      }
-    </style>
+    <link rel="stylesheet" href="styles/main.css" />
   </head>
   <body>
-    <h1>Edit Link</h1>
-    <form id="editLinkForm">
-      <div class="form-group">
-        <label for="title">Title:</label>
-        <input type="text" id="title" required />
-      </div>
-      <div class="form-group">
-        <label for="url">URL:</label>
-        <input type="url" id="url" required />
-      </div>
-      <div class="form-group">
-        <label for="description">Description:</label>
-        <textarea id="description" rows="4"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="tags">Tags (comma-separated):</label>
-        <input type="text" id="tags" />
-      </div>
-      <button type="submit">Update Link</button>
-      <a href="index.html"><button type="button">Cancel</button></a>
-    </form>
+    <div class="container">
+      <h1>Edit Link</h1>
+      <form id="editLinkForm">
+        <div class="form-group">
+          <label for="title">Title:</label>
+          <input type="text" id="title" required />
+        </div>
+        <div class="form-group">
+          <label for="url">URL:</label>
+          <input type="url" id="url" required />
+        </div>
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea id="description" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="tags">Tags (comma-separated):</label>
+          <input type="text" id="tags" />
+        </div>
+        <div class="form-group text-center">
+          <button type="submit" class="mb-20">Update Link</button>
+          <a href="index.html"
+            ><button type="button" class="delete">Cancel</button></a
+          >
+        </div>
+      </form>
+    </div>
 
     <script>
       const API_URL = "http://localhost:5000/api/links";

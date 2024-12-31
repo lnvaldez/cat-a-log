@@ -4,35 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Link Library</title>
-    <style>
-      .link-card {
-        border: 1px solid #ddd;
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 5px;
-      }
-      .tags {
-        color: #666;
-        font-size: 0.9em;
-      }
-      .description {
-        margin-top: 10px;
-      }
-      .actions {
-        margin-top: 10px;
-      }
-      .actions button {
-        margin-right: 10px;
-      }
-    </style>
+    <link rel="stylesheet" href="styles/main.css" />
   </head>
   <body>
     <h1>Link Library</h1>
     <a href="create.html"><button>Create New Link</button></a>
+
+    <div class="filter-section">
+      <h3>Filter by Tags:</h3>
+      <div id="tagFilters"></div>
+      <button onclick="clearFilters()">Clear Filters</button>
+    </div>
+
     <div id="links"></div>
 
     <script>
       const API_URL = "http://localhost:5000/api/links";
+      let allLinks = [];
+      let activeTags = new Set();
 
       async function deleteLink(id) {
         if (!confirm("Are you sure you want to delete this link?")) return;
@@ -43,7 +32,7 @@
           });
 
           if (response.ok) {
-            displayLinks(); // Refresh the list
+            await loadLinks();
           } else {
             alert("Failed to delete link");
           }
@@ -67,18 +56,66 @@
         }
       }
 
+      function getAllTags(links) {
+        const tagSet = new Set();
+        links.forEach((link) => {
+          if (link.tags) {
+            link.tags.forEach((tag) => tagSet.add(tag));
+          }
+        });
+        return Array.from(tagSet).sort();
+      }
+
+      function displayTagFilters(tags) {
+        const tagFiltersContainer = document.getElementById("tagFilters");
+        tagFiltersContainer.innerHTML = tags
+          .map(
+            (tag) => `
+          <span class="tag-filter ${activeTags.has(tag) ? "active" : ""}" 
+                onclick="toggleTag('${tag}')">
+            ${tag}
+          </span>
+        `
+          )
+          .join("");
+      }
+
+      function toggleTag(tag) {
+        if (activeTags.has(tag)) {
+          activeTags.delete(tag);
+        } else {
+          activeTags.add(tag);
+        }
+        displayLinks();
+        displayTagFilters(getAllTags(allLinks));
+      }
+
+      function clearFilters() {
+        activeTags.clear();
+        displayLinks();
+        displayTagFilters(getAllTags(allLinks));
+      }
+
       async function displayLinks() {
         const linksContainer = document.getElementById("links");
         try {
-          const links = await getLinks();
+          let filteredLinks = allLinks;
+          if (activeTags.size > 0) {
+            filteredLinks = allLinks.filter(
+              (link) =>
+                link.tags &&
+                Array.from(activeTags).every((tag) => link.tags.includes(tag))
+            );
+          }
 
-          if (links.length === 0) {
-            linksContainer.innerHTML = "<p>No links available. Create one!</p>";
+          if (filteredLinks.length === 0) {
+            linksContainer.innerHTML =
+              "<p>No links match the selected filters. Try clearing filters or create a new link!</p>";
             return;
           }
 
           linksContainer.innerHTML = "";
-          links.forEach((link) => {
+          filteredLinks.forEach((link) => {
             linksContainer.innerHTML += `
               <div class="link-card">
                 <h3><a href="${link.url}" target="_blank">${link.title}</a></h3>
@@ -103,8 +140,14 @@
         }
       }
 
+      async function loadLinks() {
+        allLinks = await getLinks();
+        displayLinks();
+        displayTagFilters(getAllTags(allLinks));
+      }
+
       // Initialize the page
-      displayLinks();
+      loadLinks();
     </script>
   </body>
 </html>
