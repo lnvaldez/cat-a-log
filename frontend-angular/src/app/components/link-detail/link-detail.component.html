@@ -1,0 +1,65 @@
+<div class="container">
+  <div class="text-center mb-20">
+    <a routerLink="/">
+      <button>Back to List</button>
+    </a>
+  </div>
+
+  <ng-container *ngIf="loading">
+    <div class="loading">Loading...</div>
+  </ng-container>
+
+  <ng-container *ngIf="error">
+    <div class="error">{{ error }}</div>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && !error && link">
+    <div class="link-card">
+      <h2>{{ link.title }}</h2>
+      <p>
+        <a [href]="link.url" target="_blank" rel="noopener noreferrer">
+          {{ link.url }}
+        </a>
+      </p>
+      <p class="description">{{ link.description }}</p>
+      <div class="tags">
+        <span *ngFor="let tag of link.tags" class="tag-filter">
+          {{ tag }}
+        </span>
+      </div>
+    </div>
+
+    <div class="votes">
+      <h3>Votes: {{ link.votes }}</h3>
+      <div class="vote-buttons">
+        <button (click)="handleVote(1)">👍 Upvote</button>
+        <button class="delete" (click)="handleVote(-1)">👎 Downvote</button>
+      </div>
+    </div>
+
+    <div class="comments">
+      <h3>Comments</h3>
+      <form (ngSubmit)="handleCommentSubmit()" class="comment-form">
+        <div class="form-group">
+          <textarea
+            [(ngModel)]="newComment"
+            name="comment"
+            rows="4"
+            placeholder="Write your comment here..."
+            required
+          ></textarea>
+        </div>
+        <div class="text-center">
+          <button type="submit">Add Comment</button>
+        </div>
+      </form>
+
+      <div class="comments-list mt-20">
+        <div *ngFor="let comment of comments" class="comment">
+          <p>{{ comment.content }}</p>
+          <small>{{ comment.createdAt | date : "medium" }}</small>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

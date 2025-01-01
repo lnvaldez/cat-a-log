@@ -1,0 +1,64 @@
+<div class="container">
+  <h1>Link Library</h1>
+  <div class="text-center mb-20">
+    <a routerLink="/create">
+      <button>Create New Link</button>
+    </a>
+  </div>
+
+  <ng-container *ngIf="loading">
+    <div class="loading">Loading links...</div>
+  </ng-container>
+
+  <ng-container *ngIf="error">
+    <div class="error">{{ error }}</div>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && !error">
+    <div class="filter-section">
+      <h3>Filter by Tags:</h3>
+      <div class="tag-filters">
+        <button
+          *ngFor="let tag of allTags"
+          class="tag-filter"
+          [class.active]="activeTags.has(tag)"
+          (click)="toggleTag(tag)"
+        >
+          {{ tag }}
+        </button>
+      </div>
+      <button *ngIf="activeTags.size > 0" (click)="clearTags()">
+        Clear Filters
+      </button>
+    </div>
+
+    <div class="links">
+      <p *ngIf="filteredLinks.length === 0" class="text-center">
+        No links available.
+      </p>
+
+      <div *ngFor="let link of filteredLinks" class="link-card">
+        <h3>
+          <a [href]="link.url" target="_blank" rel="noopener noreferrer">
+            {{ link.title }}
+          </a>
+        </h3>
+        <div class="tags">
+          <span *ngFor="let tag of link.tags" class="tag-filter">
+            {{ tag }}
+          </span>
+        </div>
+        <p class="description">{{ link.description }}</p>
+        <div class="actions">
+          <a [routerLink]="['/link', link._id]">
+            <button>View</button>
+          </a>
+          <a [routerLink]="['/edit', link._id]">
+            <button>Edit</button>
+          </a>
+          <button class="delete" (click)="deleteLink(link._id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

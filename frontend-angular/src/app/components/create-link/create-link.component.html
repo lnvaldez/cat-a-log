@@ -1,0 +1,48 @@
+<div class="container">
+  <h1>Create New Link</h1>
+  <form (ngSubmit)="handleSubmit()">
+    <div class="form-group">
+      <label for="title">Title:</label>
+      <input
+        type="text"
+        id="title"
+        [(ngModel)]="formData.title"
+        name="title"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="url">URL:</label>
+      <input
+        type="url"
+        id="url"
+        [(ngModel)]="formData.url"
+        name="url"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <textarea
+        id="description"
+        rows="4"
+        [(ngModel)]="formData.description"
+        name="description"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="tags">Tags (comma-separated):</label>
+      <input type="text" id="tags" [(ngModel)]="formData.tags" name="tags" />
+    </div>
+
+    <div class="form-group text-center">
+      <button type="submit" class="mb-20">Create Link</button>
+      <a routerLink="/">
+        <button type="button" class="delete">Cancel</button>
+      </a>
+    </div>
+  </form>
+</div>
