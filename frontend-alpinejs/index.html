@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Link Library - Alpine.js</title>
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div x-data="app" class="container">
+      <nav>
+        <button
+          @click="currentView = 'list'"
+          :class="{ active: currentView === 'list' }"
+        >
+          Home
+        </button>
+        <button
+          @click="currentView = 'create'"
+          :class="{ active: currentView === 'create' }"
+        >
+          Create New Link
+        </button>
+      </nav>
+
+      <!-- Link List View -->
+      <div x-show="currentView === 'list'" x-transition>
+        <h1>Link Library</h1>
+
+        <!-- Filter Section -->
+        <div class="filter-section" x-show="allTags.length > 0">
+          <h3>Filter by Tags:</h3>
+          <div class="tag-filters">
+            <template x-for="tag in allTags" :key="tag">
+              <button
+                class="tag-filter"
+                :class="{ active: activeTags.includes(tag) }"
+                @click="toggleTag(tag)"
+                x-text="tag"
+              ></button>
+            </template>
+          </div>
+          <button x-show="activeTags.length > 0" @click="clearTags">
+            Clear Filters
+          </button>
+        </div>
+
+        <!-- Links List -->
+        <div class="links">
+          <template x-for="link in filteredLinks" :key="link._id">
+            <div class="link-card">
+              <h3>
+                <a
+                  :href="link.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  x-text="link.title"
+                ></a>
+              </h3>
+              <div class="tags">
+                <template x-for="tag in link.tags" :key="tag">
+                  <span class="tag-filter" x-text="tag"></span>
+                </template>
+              </div>
+              <p class="description" x-text="link.description"></p>
+              <div class="actions">
+                <button @click="viewLink(link._id)">View</button>
+                <button @click="editLink(link._id)">Edit</button>
+                <button class="delete" @click="deleteLink(link._id)">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Link Detail View -->
+      <div x-show="currentView === 'detail'" x-transition>
+        <button @click="currentView = 'list'">&larr; Back to List</button>
+        <template x-if="currentLink">
+          <div class="link-detail">
+            <h2 x-text="currentLink.title"></h2>
+            <p>
+              <a
+                :href="currentLink.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                x-text="currentLink.url"
+              ></a>
+            </p>
+            <p class="description" x-text="currentLink.description"></p>
+            <div class="tags">
+              <template x-for="tag in currentLink.tags" :key="tag">
+                <span class="tag-filter" x-text="tag"></span>
+              </template>
+            </div>
+
+            <div class="votes">
+              <h3>Votes: <span x-text="currentLink.votes"></span></h3>
+              <div class="vote-buttons">
+                <button @click="vote(1)">👍 Upvote</button>
+                <button class="delete" @click="vote(-1)">👎 Downvote</button>
+              </div>
+            </div>
+
+            <div class="comments">
+              <h3>Comments</h3>
+              <form @submit.prevent="addComment">
+                <textarea x-model="newComment" required></textarea>
+                <button type="submit">Add Comment</button>
+              </form>
+
+              <div class="comments-list">
+                <template x-for="comment in comments" :key="comment._id">
+                  <div class="comment">
+                    <p x-text="comment.content"></p>
+                    <small
+                      x-text="new Date(comment.createdAt).toLocaleString()"
+                    ></small>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Create/Edit Link Form -->
+      <div
+        x-show="currentView === 'create' || currentView === 'edit'"
+        x-transition
+      >
+        <h1
+          x-text="currentView === 'create' ? 'Create New Link' : 'Edit Link'"
+        ></h1>
+        <form @submit.prevent="submitLink">
+          <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" id="title" x-model="formData.title" required />
+          </div>
+
+          <div class="form-group">
+            <label for="url">URL:</label>
+            <input type="url" id="url" x-model="formData.url" required />
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea
+              id="description"
+              x-model="formData.description"
+              rows="4"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="tags">Tags (comma-separated):</label>
+            <input type="text" id="tags" x-model="formData.tags" />
+          </div>
+
+          <div class="form-group text-center">
+            <button
+              type="submit"
+              x-text="currentView === 'create' ? 'Create Link' : 'Update Link'"
+            ></button>
+            <button type="button" class="delete" @click="currentView = 'list'">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
