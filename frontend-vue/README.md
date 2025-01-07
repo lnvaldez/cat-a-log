@@ -1,35 +1,24 @@
-# frontend-vue
+# Cat-a-log Vue Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Vue 3-based SPA implementation.
 
-## Recommended IDE Setup
+## 🚀 Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+1. Start the backend server first (see main README)
 
-## Customize configuration
+2. Install dependencies:
+   npm install
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+3. Start development server:
+   npm run dev
 
-## Project Setup
+4. Access the app at http://localhost:5173
 
-```sh
-npm install
-```
+## 🛠️ Structure
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+frontend-vue/
+├── src/
+│ ├── components/ # Vue components
+│ ├── views/ # Page components
+│ └── App.vue # Root component
+└── package.json # Project dependencies
